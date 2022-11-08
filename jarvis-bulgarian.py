@@ -135,37 +135,37 @@ def respond():
 
     ################################################      INFORMATION ABOUT JARVIS
 
-    elif "ismin ne" in query or "sen kimsin" in query:
-        Speak("Benim ismim Jarvis efendim")
+    elif "как се казваш" in query or "кой си ти" in query:
+        Speak("Казвам се Джарвис сър")
 
-    elif "takma adın ne" in query:
-        Speak("Benim takma adım Jarko efendim")
+    elif "как е твоя прякор" in query:
+        Speak("Прякорът ми е Джарко сър")
 
-    elif "nerelisin" in query:
-        Speak("Ben Zimovinalıyım efendim")
+    elif "откъде си" in query:
+        Speak("Аз съм от Хасково, сър")
 
-    elif "sen kaç yaşındasın" in query:
-        Speak("Ben daha 2 ay önce yaratıldım efendim")
+    elif "на колко години си" in query:
+        Speak("Бях създаден преди 4 месеца сър")
 
-    elif "sevgilin var mı" in query:
-        Speak("Şimdilik yok efendim")
+    elif "имаш ли си приятелка" in query:
+        Speak("Не за сега сър")
 
-    elif "hangi dilleri konuşabiliyorsun" in query:
-        Speak("Tüm dilleri konuşabiliyorum fakat beni bunun için yeniden kodlamanız gerek efendim")
+    elif "кои езици говориш" in query:
+        Speak("Мога да говоря всички езици, но трябва да ме кодирате за това сър")
 
-    elif "babanın ismi ne" in query or "annenin ismi ne" in query or "baban kim" in query or "annen kim" in query:
-        Speak("Benim babam da annem de Muhsin efendim")
+    elif "как се казва баща ти" in query or "как се казва майка ти" in query or "кой е твоят баща" in query or "коя е майка ти" in query:
+        Speak("Вие сте мойта майка и баща сър")
 
-    elif "ne yapabiliyorsun" in query:
-        Speak("Sizinle sohbet edebilirim, saat ve tarih söyleyebilirim, Google, Vikipedive YouTube de arama yapabilirim, uygulama açıp kapatabilirim, ve evdeki ışıkları kontrol edebilirim")
+    elif "какво можеш да направиш" in query:
+        Speak("Мога да разговарям с вас, да казвам часа и датата, да търся в Google, Wikipedia и YouTube, да включвам и изключвам приложения и да контролирам осветлението в къщата.")
 
-    elif "bu kaç" in query:
+    elif "колко е това" in query:
         fingers = cntFingers()
         #print(val)
         if fingers == 0:
-            Speak("Algılayamadım efendim")
+            Speak("Не разбрах сър")
         else:
-            Speak(str(fingers) + "efendim")
+            Speak(str(fingers) + "сър")
         time.sleep(2)
         cv2.destroyAllWindows()
 
@@ -173,110 +173,112 @@ def respond():
 
     ######################INFORMATION ABOUT ME
 
-    elif "benim ismim ne" in query or "benim adım ne" in query or "ben kimim" in query or "bu kim" in query:
+    elif "как се казвам" in query or "кой съм аз" in query or "кой е това" in query:
         face_names = faceRecognition()
         face_names = ['Ayşe' if item=='Ayshe' else item for item in face_names]
         print(face_names)
         if face_names !=[]:
             if len(face_names) < 2:
                 if "Unknown" in face_names:
-                    Speak("Sizi tanımıyorum efendim")
+                    Speak("Не ви познавам сър")
                 else:
-                    Speak(f"Sizin isminiz {face_names} efendim")
+                    Speak(f"Вашето име е {face_names} сър")
             else:
-                Speak("Sıkıysa teker teker gelin ulan")
+                Speak("Моля елате един по един")
         else:
-            Speak("Göremiyorum efendim, kameranın karşısına geçermisiniz?")
+            Speak("Не виждам сър, можете ли да застанете пред камерата")
         time.sleep(2)
         cv2.destroyAllWindows()
 
-    elif "benim ismimin anlamı ne" in query:
-        Speak("Sizin isminizin anlamı İyilik eden, iyi ve güzel işler yapan, iyilikte bulunan demek efendim")
+    elif "какво означава моето име" in query:
+        Speak("Значението на вашето име е този, който прави добро и добри дела сър")
 
-    elif "benim takma adım ne" in query:
-        Speak("Sizin takma adınız Muki efendim")
+    elif "как е моят прякор" in query:
+        Speak("Вашият прякор е Муки сър")
 
-    elif "koca annemin ismi ne" in query or "koca annemin adı ne" in query:
-        Speak("Koca Annenizin ismi Ayşe efendim")
+    # elif "koca annemin ismi ne" in query or "koca annemin adı ne" in query:
+    #     Speak("Koca Annenizin ismi Ayşe efendim")
 
-    elif "koca babamın ismi ne" in query or "koca babamın adı ne" in query:
-        Speak("Koca Babanızın ismi Bekir efendim")
+    # elif "koca babamın ismi ne" in query or "koca babamın adı ne" in query:
+    #     Speak("Koca Babanızın ismi Bekir efendim")
 
-    elif "dedemin ismi ne" in query or "dedemin adı ne" in query:
-        Speak("Dedenizin ismi Muhsin efendim")
+    # elif "dedemin ismi ne" in query or "dedemin adı ne" in query:
+    #     Speak("Dedenizin ismi Muhsin efendim")
 
-    elif "nenemin ismi ne" in query or "nenemin adı ne" in query:
-        Speak("Nenenizin ismi Nefie efendim")
+    # elif "nenemin ismi ne" in query or "nenemin adı ne" in query:
+    #    Speak("Nenenizin ismi Nefie efendim")
 
-    elif "abimin ismi ne" in query or "abimin adı ne" in query:
+    elif "как се казва брат ми" in query:
         Speak("Ağbinizin ismi Bekir efendim")
 
-    elif "annemin ismi ne" in query or "annemin adı ne" in query:
+    elif "как се казва майка ми" in query:
         Speak("Annenizin ismi Nurten efendim")
 
-    elif "babamın ismi ne" in query or "babamın adı ne" in query:
+    elif "как се казва баща ми" in query:
         Speak("Babanızın ismi Halil efendim")
 
-    elif "benim nasıl arabam var" in query:
+    elif "каква кола имам" in query:
         Speak("Sizin canavar gibi bir Opelınız var efendim")
 
-    elif "abimin nasıl arabası var" in query:
+    elif "каква кола има брат ми" in query:
         Speak("Ağbinizin zvyar gibi bir BMW si var efendim")
 
-    elif "babamın nasıl arabası var" in query:
+    elif "каква кола има баща ми" in query:
         Speak("Babanızın zvyar gibi bir volkswagen touranı var efendim")
 
-    elif "annemin nasıl arabası var" in query:
+    elif "каква кола има майка ми" in query:
         Speak("Anneizin araba ile işi yok efendim")
 
-    elif "ben kaç yaşındayım" in query:
+    elif "на колко години съм" in query or "на колко съм" in query:
         Speak("Siz 18 yaşındasınız efendim")
 
-    elif "ben nereliyim" in query or "ben nerede yaşıyorum" in query:
+    elif "откъде съм" in query or "къде живея" in query:
         Speak("Siz Zimovinalısınız efendim")
 
-    elif "benim doğum günüm ne zaman" in query or "ben ne zaman doğdum" in query:
+    elif "кога е рожденият ми ден" in query or "кога съм роден" in query:
         Speak("Sizin doğum gününüz 12 Ocak 2004 te efendim")
 
 
 
     ####################CLOCK DATE
 
-    elif "saat kaç" in query or "saati söyler misin" in query:
-        print(datetime.now().strftime("%H:%M"))
-        Speak("Saat" + datetime.now().strftime("%H:%M") + "efendim")
+    elif "колко е часа" in query or "можеш ли да ми кажеш колко е часа" in query:
+        saat = datetime.now().strftime("%H:%M")
+        print(saat)
+        Speak("Часа е" + saat + "сър")
 
-    elif "tarih" in query or "bugün günlerden ne" in query or "bugünkü tarihi söylermisin" in query:
-        print(datetime.now().strftime("%d:%B:%Y"))
-        Speak("Bugün" + datetime.now().strftime("%d:%B:%Y") + "efendim")
+    elif "дата" in query or "какъв ден е днес" in query or "можете ли да кажете днешната дата" in query:
+        tarih = datetime.now().strftime("%d:%B:%Y")
+        print(tarih)
+        Speak("Днес сме" + tarih + "сър")
 
-    elif "hava kaç derece" in query or "hava durumu" in query or "hava nasıl" in query:
+    elif "каква е температурата" in query or "прогноза за времето" in query or "как е времето" in query:
         api = "baecdbf7f75171e614a981fc4acba560"
-        url = "https://api.openweathermap.org/data/2.5/weather?q=" + "Zimovina" + "&appid=" + api
+        url = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=" + "Zimovina" + "&appid=" + api
         data = requests.get(url).json()
         temp = data["main"]["temp"]
         humidity = data["main"]["humidity"]
         description = data["weather"][0]["description"]
         if description == "clear sky":
-            description = "açık"
+            description = "ясно"
         if description == "few clouds":
-            description = "az bulutlu"
+            description = "малко облачно"
         if description == "broken clouds":
-            description = "parçalı bulutlu"
+            description = "разкъсано облачно"
         if description == "scattered clouds":
-            description = "dağınık bulutlu"
+            description = "разкъсано облачно"
         if description == "cloudy":
-            description = "bulutlu"
+            description = "облачно"
         if description == "light rain":
-            description = "hafif yağmurlu"
+            description = "слабо дъждовно"
         if description == "overcast clouds":
-            description = "kapalı bulutlu"
-        print(f"{int(temp - 273)} derece, {humidity}% nem , gökyüzü {description}")
-        Speak(f"Zimovina da hava {int(temp - 273)} derece, nem 100 de {humidity} ve gökyüzü {description} efendim")
+            description = "облачно"
+        print(f"{int(temp)} градуса, {humidity}% влага , небето е {description}")
+        Speak(f"Времето в Зимовина {int(temp)} градуса, влагата е {humidity}% и небето е {description} сър")
 
-    elif "alarm kur" in query:
-        Speak("Saat giriniz efendim")
-        timeInput = input("Saat giriniz: ")
+    elif "настрой аларма" in query:
+        Speak("Въведете час сър")
+        timeInput = input("Въведете час: ")
         def alarm():
             while True:
                 timeReal = datetime.now().strftime("%H:%M")

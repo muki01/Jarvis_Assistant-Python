@@ -9,7 +9,8 @@ import threading
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
-edgeOptions = Options().add_argument("--headless")
+edgeOptions = Options()
+edgeOptions.add_argument("--headless")
 import time
 
 

@@ -1,5 +1,3 @@
-from ast import While
-from distutils.cmd import Command
 import os
 from playsound import playsound
 os.system("mode 40,5")
@@ -249,16 +247,18 @@ def respond():
     ####################CLOCK DATE
 
     elif "saat kaç" in query or "saati söyler misin" in query:
-        print(datetime.now().strftime("%H:%M"))
-        Speak("Saat" + datetime.now().strftime("%H:%M") + "efendim")
+        saat = datetime.now().strftime("%H:%M")
+        print(saat)
+        Speak("Saat" + saat + "efendim")
 
     elif "tarih" in query or "bugün günlerden ne" in query or "bugünkü tarihi söylermisin" in query:
-        print(datetime.now().strftime("%d:%B:%Y"))
-        Speak("Bugün" + datetime.now().strftime("%d:%B:%Y") + "efendim")
+        tarih = datetime.now().strftime("%d:%B:%Y")
+        print(tarih)
+        Speak("Bugün" + tarih + "efendim")
 
     elif "hava kaç derece" in query or "hava durumu" in query or "hava nasıl" in query:
         api = "baecdbf7f75171e614a981fc4acba560"
-        url = "https://api.openweathermap.org/data/2.5/weather?q=" + "Zimovina" + "&appid=" + api
+        url = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=" + "Zimovina" + "&appid=" + api
         data = requests.get(url).json()
         temp = data["main"]["temp"]
         humidity = data["main"]["humidity"]
@@ -277,8 +277,8 @@ def respond():
             description = "hafif yağmurlu"
         if description == "overcast clouds":
             description = "kapalı bulutlu"
-        print(f"{int(temp - 273)} derece, {humidity}% nem , gökyüzü {description}")
-        Speak(f"Zimovina da hava {int(temp - 273)} derece, nem 100 de {humidity} ve gökyüzü {description} efendim")
+        print(f"{int(temp)} derece, {humidity}% nem , gökyüzü {description}")
+        Speak(f"Zimovina da hava {int(temp)} derece, nem 100 de {humidity} ve gökyüzü {description} efendim")
 
     elif "alarm kur" in query:
         Speak("Saat giriniz efendim")
@@ -806,7 +806,7 @@ def respond():
 
     elif "robota bağlan" in query:
         Speak("Robota geçiliyor efendim")
-        robotIP="http://192.168.0.100"
+        robotIP="http://192.168.0.50"
         msedge = webdriver.Edge(executable_path="./Codes/msedgedriver.exe",options=edgeOptions)
         Speak("Hazır efendim")
         while True:
@@ -828,7 +828,7 @@ def respond():
                     msedge.get (f"{robotIP}/?State=L")
                     time.sleep(0.3)
                     msedge.get (f"{robotIP}/?State=S")
-                elif command=="çık":
+                elif "çık" in command:
                     Speak("Tamam efendim robottan çıkılıyor")
                     msedge.quit()
                     break
@@ -843,27 +843,27 @@ def respond():
         while True:
             try:
                 command = takecommand()
-                if command == "sağa çevir":
+                if "sağa çevir" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     Speak("Hazır efendim")
-                elif command == "sola çevir":
+                elif "sola çevir" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     Speak("Hazır efendim")
-                elif command == "yukarı çevir" or command == "yukarıya çevir":
+                elif "yukarı çevir" in command or "yukarıya çevir" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_up&lang=eng")
                     Speak("Hazır efendim")
-                elif command == "aşağı çevir" or command == "aşağıya çevir":
+                elif "aşağı çevir" in command or "aşağıya çevir" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_down&lang=eng")
                     Speak("Hazır efendim")
-                elif command == "çık":
+                elif "çık" in command:
                     Speak("Tamam efendim kameradan çıkılıyor")
                     msedge.quit()
                     break

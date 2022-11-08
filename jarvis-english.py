@@ -239,22 +239,24 @@ def respond():
     ####################CLOCK DATE
 
     elif "what is the time" in query or "what's the time" in query or "what time is it" in query:
-        print(datetime.now().strftime("%H:%M"))
-        Speak("Time is" + datetime.now().strftime("%H:%M") + "sir")
+        time = datetime.now().strftime("%H:%M")
+        print(time)
+        Speak("Time is" + time + "sir")
 
     elif "what day is it" in query or "tell today's date" in query or "what is the date" in query or "what's the date" in query:
-        print(datetime.now().strftime("%d:%B:%Y"))
-        Speak("Today is" + datetime.now().strftime("%d:%B:%Y") + "sir")
+        date = datetime.now().strftime("%d:%B:%Y")
+        print(date)
+        Speak("Today is" + date + "sir")
 
     elif "what is the temperature" in query or "what's the temperature" in query:
         api = "baecdbf7f75171e614a981fc4acba560"
-        url = "https://api.openweathermap.org/data/2.5/weather?q=" + "Zimovina" + "&appid=" + api
+        url = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=" + "Zimovina" + "&appid=" + api
         data = requests.get(url).json()
         temp = data["main"]["temp"]
         humidity = data["main"]["humidity"]
         description = data["weather"][0]["description"]
-        print(f"{int(temp - 273)} derece, {humidity}% nem , gökyüzü {description}")
-        Speak(f"The temperature in Zimovina is {int(temp - 273)} degrees, humidity is {humidity} percent and sky is {description} sir")
+        print(f"{int(temp)} derece, {humidity}% nem , gökyüzü {description}")
+        Speak(f"The temperature in Zimovina is {int(temp)} degrees, humidity is {humidity} percent and sky is {description} sir")
 
     elif "set alarm" in query:
         Speak("Enter time sir")
@@ -751,7 +753,7 @@ def respond():
 
     elif "connect to the robot" in query:
         Speak("Ok sir connecting to the robot")
-        robotIP="http://192.168.0.100"
+        robotIP="http://192.168.0.50"
         msedge = webdriver.Edge(executable_path="./Codes/msedgedriver.exe",options=edgeOptions)
         Speak("Ready sir")
         while True:
@@ -773,7 +775,7 @@ def respond():
                     msedge.get (f"{robotIP}/?State=L")
                     time.sleep(0.3)
                     msedge.get (f"{robotIP}/?State=S")
-                elif command=="exit":
+                elif "exit" in command:
                     Speak("Ok sir exiting the robot")
                     msedge.quit()
                     break
@@ -788,27 +790,27 @@ def respond():
         while True:
             try:
                 command = takecommand()
-                if command == "turn right" or command == "right":
+                if "turn right" in command or "right" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     Speak("Ready sir")
-                elif command == "turn left" or command == "left":
+                elif "turn left" in command or "left" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     time.sleep(0.3)
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     Speak("Ready sir")
-                elif command == "up":
+                elif "up" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_up&lang=eng")
                     Speak("Ready sir")
-                elif command == "down":
+                elif "down" in command:
                     msedge.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_down&lang=eng")
                     Speak("Ready sir")
-                elif command == "exit":
+                elif "exit" in command:
                     Speak("Ok sir exiting the camera")
                     msedge.quit()
                     break
