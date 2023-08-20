@@ -1,0 +1,7 @@
+@Resources/includes/Lines.inc
+@Resources/includes/Lines2.inc
+@Resources/includes/BandMeasures.inc
+@Resources/includes/BandMeasures2.inc
+SettingsWindow/SettingsWindow.inc
+SettingsWindow/SelectPopup/SelectPopup.inc
+SettingsWindow/GradientWindow/GradientWindow.inc

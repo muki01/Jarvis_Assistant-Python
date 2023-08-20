@@ -1,1 +1,0 @@
-Yolo v3 - Tiny -- https://pjreddie.com/media/files/yolov3-tiny.weights
