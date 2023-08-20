@@ -2,7 +2,7 @@
 This is my Jarvis project with Python. He can talk 3 Languages: English, Bulgarish, Turkish.
 <br/>
 
-## Download the latest revision
+## ⬇️Download the latest revision
 ```
 # Download using this code:
 
