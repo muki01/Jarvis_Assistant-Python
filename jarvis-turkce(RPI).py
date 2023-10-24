@@ -4,7 +4,7 @@ import asyncio
 import edge_tts
 import speech_recognition as sr
 import webbrowser
-import pyautogui
+#import pyautogui
 # from selenium import webdriver
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.edge.options import Options
@@ -12,11 +12,11 @@ import serial
 import time
 from datetime import datetime
 import random
-import speedtest
+#import speedtest
 import wikipedia
-import pywhatkit
+#import pywhatkit
 import requests
-import cv2
+#import cv2
 import threading
 import openai
 # from Codes.faceRec import faceRecognition
@@ -49,16 +49,16 @@ async def _main(TEXT) -> None:
 
 def takecommand():
     command = sr.Recognizer()
-    with sr.Microphone(device_index=0) as source:
+    with sr.Microphone() as source:          #device_index=0
         command.energy_threshold = 4000  
         command.dynamic_energy_threshold = True  
-        print('\033[36m' + "Listening...")
+        print("Listening...")
         audio = command.listen(source,phrase_time_limit=15)
 
         try:
-            print('\033[31m' + "Recognizing...")
+            print("Recognizing...")
             query = command.recognize_google(audio, language="tr-TR")
-            print ('\033[33m' + f"You Saind: "+ '\033[37m' + f"{query}")
+            print (f"You Saind: {query}")
 
         except Exception as error:
             return ""
@@ -68,7 +68,7 @@ def takecommand():
 def openAI(speech):
     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": f"{speech}"}]) 
     response_text = response.choices[0].message.content
-    print('\033[32m' + f"OpenAI response: " + '\033[37m' + f"{response_text}")
+    print(f"OpenAI response: {response_text}")
     Speak(response_text,True)
 
 def checkArduino():
