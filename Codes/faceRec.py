@@ -70,14 +70,14 @@ face.load_encoding_images("./Codes/Faces/")
 cam = cv2.VideoCapture(0)
 
 def faceRecognition():
-        ret, frame = cam.read()
+    success, img = cam.read()
 
-        face_locations, face_names = face.detect_known_faces(frame)
-        for face_loc, name in zip(face_locations, face_names):
-            y1, x2, y2, x1 = face_loc[0], face_loc[1], face_loc[2], face_loc[3]
+    face_locations, face_names = face.detect_known_faces(img)
+    for face_loc, name in zip(face_locations, face_names):
+        y1, x2, y2, x1 = face_loc[0], face_loc[1], face_loc[2], face_loc[3]
 
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 128, 0), 4)
-            cv2.putText(frame, name.upper(),(x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 128, 0), 2)
+        cv2.rectangle(img, (x1, y1), (x2, y2), (255, 128, 0), 4)
+        cv2.putText(img, name.upper(),(x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 128, 0), 2)
 
-        cv2.imshow("Cam", frame)
-        return face_names
+    cv2.imshow("Cam", img)
+    return face_names

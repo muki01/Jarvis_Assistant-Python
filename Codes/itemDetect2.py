@@ -11,11 +11,10 @@ with open("./Codes/dnn_model/classes.txt", "r") as file_object:
         class_name = class_name.strip()
         classes.append(class_name)
 
-cam="rtsp://192.168.0.92:554/user=admin&password=halil1978&channel=8&stream=0"
-cap = cv2.VideoCapture(2)
+cam = cv2.VideoCapture(0)
 
 def itemDetection():
-    ret, frame = cap.read()
+    ret, frame = cam.read()
     (class_ids, scores, bboxes) = model.detect(frame, confThreshold=0.5, nmsThreshold=0.3)
     for class_id, score, bbox in zip(class_ids, scores, bboxes):
         (x, y, w, h) = bbox

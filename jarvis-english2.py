@@ -1,15 +1,12 @@
 import os
 from playsound import playsound
-# os.system("mode 40,5")
-# playsound("./SoundEffects/start3.mp3", False)
+os.system("mode 40,5")
+playsound("./SoundEffects/start3.mp3", False)
 import asyncio
 import edge_tts
-import speech_recognition as sr
+import speech_recognition
 import webbrowser
 import pyautogui
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.edge.options import Options
 import serial
 import time
 from datetime import datetime
@@ -18,20 +15,20 @@ import speedtest
 import wikipedia
 import pywhatkit
 import requests
-import cv2
 import threading
-import openai
-# from Codes.faceRec import faceRecognition
-# from Codes.itemDetect import itemDetection
-# from Codes.fingerCounter import cntFingers
+# import openai
+import cv2
+from Codes.faceRec import faceRecognition
+from Codes.itemDetect import itemDetection
+from Codes.fingerCounter import cntFingers
 
-openai.api_key = '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'
+wled_IP_Addr = "http://192.168.0.90"
+robot_IP_Addr = "http://192.168.0.50"
+robotDog_IP_Addr = "http://192.168.0.200"
+camera_IP_Addr = "http://admin:123456@192.168.0.234"
+
+# openai.api_key = 'abcd'
 wikipedia.set_lang("en")
-# edgeOptions = Options()
-# edgeOptions.add_argument("--headless")
-# edgeOptions.add_argument("--disable-extensions")
-# edgeOptions.add_argument("--disable-gpu")
-# edgeOptions.add_argument("--disable-dev-shm-usage")
 
 VOICE = "en-US-SteffanNeural"
 OUTPUT_FILE = "voice.mp3"
@@ -39,7 +36,7 @@ def Speak(audio, disableBackground=False):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(_main(audio))
-    #asyncio.get_event_loop().run_until_complete(_main(audio))
+
     playsound("voice.mp3", disableBackground)
     os.remove("voice.mp3")
 
@@ -48,10 +45,10 @@ async def _main(TEXT) -> None:
     await communicate.save(OUTPUT_FILE)
 
 def takecommand():
-    command = sr.Recognizer()
-    with sr.Microphone(device_index=0) as source:
-        # command.energy_threshold = 3500  
-        # command.dynamic_energy_threshold = True  
+    command = speech_recognition.Recognizer()
+    with speech_recognition.Microphone(device_index=0) as source:
+        command.energy_threshold = 3500  
+        command.dynamic_energy_threshold = True  
         print('\033[36m' + "Listening...")
         audio = command.listen(source,phrase_time_limit=15)
 
@@ -65,11 +62,11 @@ def takecommand():
 
         return query.lower()
 
-def openAI(speech):
-    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": f"{speech}"}]) 
-    response_text = response.choices[0].message.content
-    print('\033[32m' + f"OpenAI response: " + '\033[37m' + f"{response_text}")
-    Speak(response_text,True)
+# def openAI(speech):
+#     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": f"{speech}"}]) 
+#     response_text = response.choices[0].message.content
+#     print('\033[32m' + f"OpenAI response: " + '\033[37m' + f"{response_text}")
+#     Speak(response_text,True)
 
 def checkArduino():
     try:
@@ -83,17 +80,16 @@ def checkArduino():
 def greeting():
     hour = datetime.now().hour
     if hour >=6 and hour < 12:
-        Speak("Good morning sir")
+        Speak("Good morning sir", True)
     elif hour >= 12 and hour <18:
-        Speak("Good afternoon sir")
+        Speak("Good afternoon sir", True)
     else:
-        Speak("Good evening sir")
+        Speak("Good evening sir", True)
     Speak("What can i do for you")
 
 def respond():
 
     #################OPENING COMMANDS
-
     if query =="jarvis":
         Speak("Yes sir")
 
@@ -130,15 +126,10 @@ def respond():
     elif "why aren't you answering" in query or "answer" in query:
         Speak("Can you say it again sir")
 
-    elif "*" in query:
-        Speak("Sorry if i made a mistake sir")
-
     elif "change the language" in query:
         Speak("Ok sir the language is getting turkish")
         os.startfile("jarvis-turkce.py")
         exit()
-
-
 
     #################INFORMATION ABOUT JARVIS
 
@@ -168,20 +159,18 @@ def respond():
 
     elif "how much is this" in query:
         fingers = cntFingers()
-        #print(val)
+        cv2.destroyAllWindows()
+        print(fingers)
         if fingers == 0:
             Speak("I can't see sir")
         else:
             Speak(str(fingers) + "sir")
-        time.sleep(2)
-        cv2.destroyAllWindows()
-
-
 
     ######################INFORMATION ABOUT ME
 
     elif "what is my name" in query or "what's my name" in query:
         face_names = faceRecognition()
+        cv2.destroyAllWindows()
         face_names = ['Ayşe' if item=='Ayshe' else item for item in face_names]
         print(face_names)
         if face_names !=[]:
@@ -194,8 +183,6 @@ def respond():
                 Speak("Come one by one")
         else:
             Speak("I can't see, sir, can you stand in front of the camera?")
-        time.sleep(2)
-        cv2.destroyAllWindows()
 
     elif "what does my name mean" in query:
         Speak("The meaning of your name is the one who does good and good deeds sir")
@@ -245,8 +232,6 @@ def respond():
     elif "when is my birthday" in query or "when was i born" in query:
         Speak("Your birthday is January 12, 2004, sir.")
 
-
-
     ####################CLOCK DATE
 
     elif "what is the time" in query or "what's the time" in query or "what time is it" in query:
@@ -282,39 +267,39 @@ def respond():
         t1 = threading.Thread(target=alarm)
         t1.start()
 
-
     #####################OPEN & SEARCH
+
     elif "search" in query and "on google" in query:
+        google_Search_URL = "https://www.google.com/search?q="
         try:
             if query == "search on google":
                 Speak("What do you want me to search sir")
                 search = takecommand()
-                url = "https://www.google.com/search?q=" + search
-                webbrowser.open(url)
-                Speak("searching" + search)
+                url = google_Search_URL + search
             else:
                 search = query.replace("on google", "")
                 search2 = search.replace("search", "")
-                url = "https://www.google.com/search?q=" + search2
-                webbrowser.open(url)
-                Speak("searching" + search2)
+                url = google_Search_URL + search2
+
+            webbrowser.open(url)
+            Speak("searching" + search)
         except:
             Speak("I don't understand sir")
 
     elif "search" in query and "on youtube" in query:
+        youtube_Search_URL = "https://www.youtube.com/results?search_query="
         try:
             if query == "search on youtube":
                 Speak("What do you want me to search sir")
                 search = takecommand()
-                url = "https://www.youtube.com/results?search_query=" + search
-                webbrowser.open(url)
-                Speak("searching" + search)
+                url = youtube_Search_URL + search
             else:
                 search = query.replace("on youtube", "")
                 search2 = search.replace("search", "")
-                url = "https://www.youtube.com/results?search_query=" + search2
-                webbrowser.open(url)
-                Speak("searching" + search2)
+                url = youtube_Search_URL + search2
+
+            webbrowser.open(url)
+            Speak("searching" + search)
         except:
             Speak("I don't understand sir")
 
@@ -323,13 +308,12 @@ def respond():
             if query == "open on youtube":
                 Speak("What do you want me to open sir")
                 search = takecommand()
-                pywhatkit.playonyt(search)
-                Speak("opening" + search)
             else:
                 search = query.replace("on youtube", "")
                 search2 = search.replace("open", "")
-                pywhatkit.playonyt(search2)
-                Speak("opening" + search2)
+
+            pywhatkit.playonyt(search)
+            Speak("opening" + search)
         except:
             Speak("I don't understand sir")
 
@@ -360,8 +344,8 @@ def respond():
         except:
             Speak("I don't understand sir")
 
-
     ################################################################################################
+
     elif "open google" in query:
         webbrowser.open("www.google.com")
         Speak("Opening Google")
@@ -441,7 +425,17 @@ def respond():
         t1 = threading.Thread(target=itemDetect)
         t1.start()
 
-
+    elif "open hand detection camera" in query:
+        Speak("Tamam efendim")
+        def handDetect():
+            while  True:
+                cntFingers()
+                key = cv2.waitKey(1)
+                if key == 27 or query == "close the hand detection camera":
+                    break
+            cv2.destroyAllWindows()
+        t1 = threading.Thread(target=handDetect)
+        t1.start()
 
     #######################   MEDIA
 
@@ -509,17 +503,15 @@ def respond():
         except:
             Speak("I don't understand sir")
 
-
-
     #####################################MASA LAMBASI
 
     elif "desk light off" in query or "desk light on" in query or "turn on the desk light" in query or "turn off the desk light" in query:
         Speak("Ok sir")
         if "on" in query:
-            getRequest = requests.get("http://192.168.0.90/win&T=1")
+            getRequest = requests.get(f"{wled_IP_Addr}/win&T=1")
             #arduino.write(b'2')
         elif "off" in query:
-            getRequest = requests.get("http://192.168.0.90/win&T=0")
+            getRequest = requests.get(f"{wled_IP_Addr}/win&T=0")
             #arduino.write(b'1')
 
         if getRequest:
@@ -536,47 +528,47 @@ def respond():
                     break
                 elif colorr == "red":
                     Speak("Desk light is being made red sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=255&G=0&B=0")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=0&B=0")
                     #arduino.write(b'3')
                     break
                 elif colorr == "orange":
                     Speak("Desk light is being made orange sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=255&G=160&B=0")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=160&B=0")
                     #arduino.write(b'6')
                     break
                 elif colorr == "yellow":
                     Speak("Desk light is being made yellow sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=255&G=200&B=0")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=200&B=0")
                     #arduino.write(b'7')
                     break
                 elif colorr == "white":
                     Speak("Desk light is being made white sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=255&G=255&B=255")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=255&B=255")
                     #arduino.write(b'8')
                     break
                 elif colorr == "pink":
                     Speak("Desk light is being made pink sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=255&G=0&B=220")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=0&B=220")
                     #arduino.write(b'9')
                     break
                 elif colorr == "blue":
                     Speak("Desk light is being made blue sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=0&G=200&B=255")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=0&G=200&B=255")
                     #arduino.write(b'5')
                     break
                 elif colorr == "cyan":
                     Speak("Desk light is being made cyan sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=0&G=255&B=220")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=0&G=255&B=220")
                     #arduino.write(b'10')
                     break
                 elif colorr == "green":
                     Speak("Desk light is being made green sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=0&G=255&B=0")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=0&G=255&B=0")
                     #arduino.write(b'4')
                     break
                 elif colorr == "purple":
                     Speak("Desk light is being made purple sir")
-                    getRequest = requests.get("http://192.168.0.90/win&R=2770&G=0&B=255")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&R=2770&G=0&B=255")
                     #arduino.write(b'4')
                     break
                 else:
@@ -597,11 +589,11 @@ def respond():
                     break
                 elif effect == "rainbow":
                     Speak("Desk light effect making rainbow sir")
-                    getRequest = requests.get("http://192.168.0.90/win&PL=1")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&PL=1")
                     break
                 elif effect == "normal":
                     Speak("Desk light effect making normal sir")
-                    getRequest = requests.get("http://192.168.0.90/win&PL=10")
+                    getRequest = requests.get(f"{wled_IP_Addr}/win&PL=10")
                     break
                 elif effect == "bass eff":
                     os.startfile("E:\LedFx\LedFx_core-v2.0.60--win-portable.exe")
@@ -615,7 +607,6 @@ def respond():
         if getRequest:
             print(f"Get Request status: {getRequest.status_code}")
             getRequest=0;
-
 
     #################################################################
 
@@ -675,15 +666,6 @@ def respond():
         correctUp = int(upload/800000)
         Speak(f"Downloading speed is {correctDown-10} megabit per seccong and uploading speed is {correctUp-10} megabit per seccong")
 
-    elif "open the bluetooth" in query or "close the bluetooth" in query:
-        pyautogui.keyDown("win")
-        pyautogui.press("a")
-        pyautogui.keyUp("win")
-        pyautogui.click(x=1400, y=900)
-        pyautogui.keyDown("win")
-        pyautogui.press("a")
-        pyautogui.keyUp("win")
-        Speak("Ok sir")
 
     elif "take screenshot" in query or "take ss" in query:
         img= pyautogui.screenshot()
@@ -711,10 +693,9 @@ def respond():
 
     elif "put everything to sleep" in query:
         Speak("Ok sir everything is going to sleep mode")
-        requests.get("http://192.168.0.90/win&T=0")
+        requests.get(f"{wled_IP_Addr}/win&T=0")
         # arduino.write(b'1')
         os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
-
 
     #################################################################
 
@@ -750,31 +731,27 @@ def respond():
     #     JarvisUI.stop()
     #     Speak("Ok sir")
 
-
-
-
     elif "connect to the robot" in query:
         Speak("Connecting to the robot. Ready sir")
-        robotIP="http://192.168.0.50"
         while True:
             try:
                 command = takecommand()
                 if "go forward" in command:
-                    getRequest = requests.get(f"{robotIP}/?State=F")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=F")
                     time.sleep(0.3)
-                    getRequest = requests.get(f"{robotIP}/?State=S")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=S")
                 elif "go back" in command:
-                    etRequest = requests.get(f"{robotIP}/?State=B")
+                    etRequest = requests.get(f"{robot_IP_Addr}/?State=B")
                     time.sleep(0.3)
-                    getRequest = requests.get(f"{robotIP}/?State=S")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=S")
                 elif "turn right" in command:
-                    getRequest = requests.get(f"{robotIP}/?State=R")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=R")
                     time.sleep(0.3)
-                    getRequest = requests.get(f"{robotIP}/?State=S")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=S")
                 elif "turn left" in command:
-                    getRequest = requests.get(f"{robotIP}/?State=L")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=L")
                     time.sleep(0.3)
-                    getRequest = requests.get(f"{robotIP}/?State=S")
+                    getRequest = requests.get(f"{robot_IP_Addr}/?State=S")
                 elif "exit" in command:
                     Speak("Ok sir exiting the robot")
                     break
@@ -786,25 +763,24 @@ def respond():
 
     elif "connect to the camera" in query:
         Speak("Connecting to the camera. Ready sir")
-        kameraIP="http://admin:123456@192.168.0.234"
         while True:
             try:
                 command = takecommand()
                 if "turn right" in command or "right" in command:
-                    mgetRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
+                    mgetRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
                     Speak("Ready sir")
                 elif "turn left" in command or "left" in command:
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
                     Speak("Ready sir")
                 elif "up" in command:
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_up&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_up&lang=eng")
                     Speak("Ready sir")
                 elif "down" in command:
-                    getRequest = requests.get(f"{kameraIP}/cgi-bin/action?action=cam_mv&diretion=cam_down&lang=eng")
+                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_down&lang=eng")
                     Speak("Ready sir")
                 elif "exit" in command:
                     Speak("Ok sir exiting the camera")
@@ -819,72 +795,71 @@ def respond():
 
     elif "connect to the dog" in query:
         Speak("Connecting to the dog. Ready sir")
-        robotDogIP = "http://192.168.0.200"
         while True:
             try:
                 command = takecommand()
                 if "stand up" in command:
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "sleep" in command:
-                    getRequest = requests.get(f"{robotDogIP}/sleep")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/sleep")
                     Speak("Ready sir")
                 elif "sit" in command:
-                    getRequest = requests.get(f"{robotDogIP}/sit")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/sit")
                     Speak("Ready sir")
                 elif "lean forward" in command:
-                    getRequest = requests.get(f"{robotDogIP}/leanForward")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/leanForward")
                     Speak("Ready sir")
                 elif "lean right" in command:
-                    getRequest = requests.get(f"{robotDogIP}/leanRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/leanRight")
                     Speak("Ready sir")
                 elif "lean left" in command:
-                    getRequest = requests.get(f"{robotDogIP}/leanLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/leanLeft")
                     Speak("Ready sir")
                 elif "shake your hand" in command:
-                    getRequest = requests.get(f"{robotDogIP}/wavingHand")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/wavingHand")
                     Speak("Ready sir")
                 elif "go forward" in command:
-                    getRequest = requests.get(f"{robotDogIP}/walk")
-                    getRequest = requests.get(f"{robotDogIP}/walk")
-                    getRequest = requests.get(f"{robotDogIP}/walk")
-                    getRequest = requests.get(f"{robotDogIP}/walk")
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walk")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walk")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walk")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walk")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "go back" in command:
-                    getRequest = requests.get(f"{robotDogIP}/walkBack")
-                    getRequest = requests.get(f"{robotDogIP}/walkBack")
-                    getRequest = requests.get(f"{robotDogIP}/walkBack")
-                    getRequest = requests.get(f"{robotDogIP}/walkBack")
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkBack")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkBack")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkBack")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkBack")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "turn right" in command:
-                    getRequest = requests.get(f"{robotDogIP}/turnRight")
-                    getRequest = requests.get(f"{robotDogIP}/turnRight")
-                    getRequest = requests.get(f"{robotDogIP}/turnRight")
-                    getRequest = requests.get(f"{robotDogIP}/turnRight")
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "turn left" in command:
-                    getRequest = requests.get(f"{robotDogIP}/turnLeft")
-                    getRequest = requests.get(f"{robotDogIP}/turnLeft")
-                    getRequest = requests.get(f"{robotDogIP}/turnLeft")
-                    getRequest = requests.get(f"{robotDogIP}/turnLeft")
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/turnLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "go right" in command:
-                    getRequest = requests.get(f"{robotDogIP}/walkRight")
-                    getRequest = requests.get(f"{robotDogIP}/walkRight")
-                    getRequest = requests.get(f"{robotDogIP}/walkRight")
-                    getRequest = requests.get(f"{robotDogIP}/walkRight")
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkRight")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "go left" in command:
-                    getRequest = requests.get(f"{robotDogIP}/walkLeft")
-                    getRequest = requests.get(f"{robotDogIP}/walkLeft")
-                    getRequest = requests.get(f"{robotDogIP}/walkLeft")
-                    getRequest = requests.get(f"{robotDogIP}/walkLeft")
-                    getRequest = requests.get(f"{robotDogIP}/standUp")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/walkLeft")
+                    getRequest = requests.get(f"{robotDog_IP_Addr}/standUp")
                     Speak("Ready sir")
                 elif "exit" in command:
                     Speak("Ok sir exiting the dog")
@@ -897,7 +872,6 @@ def respond():
             except:
                 Speak("There was an error sir")
 
-    
 checkArduino()
 #os.startfile("E:\Wallpaper Engine\wallpaper64.exe")
 os.startfile(".\Required\Rainmeter\Rainmeter.exe")
@@ -906,19 +880,19 @@ while True:
     query = takecommand()
     if query !="":
         respond()
-    if query == "switch to ai":
-        Speak("Switch to AI", True)
-        while True:
-            query = takecommand()
-            if query:
-                if query == "exxit":
-                    Speak("Exiting sir", True)
-                    break
-                else:
-                    openAI(query)
+    # if query == "switch to ai":
+    #     Speak("Switch to AI", True)
+    #     while True:
+    #         query = takecommand()
+    #         if query:
+    #             if query == "exxit":
+    #                 Speak("Exiting sir", True)
+    #                 break
+    #             else:
+    #                 openAI(query)
                 
     if query == "you can sleep"  or query == "sleep" or query == "goodbye" or query == "goodbay":
-        Speak("Ok sir, you can call me if you need me")
+        Speak("Ok sir, you can call me if you need me", True)
         os.system("taskkill /f /im Rainmeter.exe")
         exit()
     

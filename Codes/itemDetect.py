@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-cam = "rtsp://192.168.0.92:554/user=admin&password=halil1978&channel=8&stream=0"
-capp = cv2.VideoCapture(0)
-capp.set(3, 1280)
-capp.set(4, 720)
+cam = cv2.VideoCapture(0)
+# cam.set(3, 1280)
+# cam.set(4, 720)
+
 whT = 320
 confThreshold =0.5
 nmsThreshold= 0.3
@@ -44,10 +44,10 @@ def findObjects(outputs,img):
         # print(x,y,w,h)
         cv2.rectangle(img, (x, y), (x+w,y+h), (255, 0 , 255), 2)
         cv2.putText(img,f'{classNames[classIds[i]].upper()} {int(confs[i]*100)}%', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 255), 2)
-        print(classNames[classIds[i]].upper())
+        # print(classNames[classIds[i]].upper())
 
 def itemDetection():
-    success, img = capp.read()
+    success, img = cam.read()
     blob = cv2.dnn.blobFromImage(img, 1 / 255, (whT, whT), [0, 0, 0], 1, crop=False)
     net.setInput(blob)
     layersNames = net.getLayerNames()
