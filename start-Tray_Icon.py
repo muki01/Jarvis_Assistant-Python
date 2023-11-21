@@ -7,14 +7,16 @@ import PIL.Image
 import threading
 import time
 
+wled_IP_Addr = "http://192.168.0.90"
+
 def TrayIcon():
     image = PIL.Image.open("./VideoEffects/jarvis.png")
 
     def on_clicked(icon,item):
         if str(item)=="Led On":
-            requests.get("http://192.168.0.90/win&T=1")
+            requests.get(f"{wled_IP_Addr}/win&T=1")
         elif str(item)=="Led Off":
-            requests.get("http://192.168.0.90/win&T=0")
+            requests.get(f"{wled_IP_Addr}/win&T=0")
         elif str(item)=="Exit":
             os.system("taskkill /f /im Rainmeter.exe")
             os.system("taskkill /f /im wallpaper64.exe")
@@ -51,10 +53,10 @@ while True:
         start = takecommand()
 
         if start == "uyan" or  start == "uyan jarvis" or start == "hey jarvis":
-            os.startfile('turkce.py')
+            os.startfile('jarvis-turkce2.py')
 
         if start == "wake up" or start == "wake up jarvis":
-            os.startfile('english.py')
+            os.startfile('jarvis-english2.py')
             
     elif t1.is_alive()==False:
         print("exiting")
