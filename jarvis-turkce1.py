@@ -723,7 +723,6 @@ def respond():
         # arduino.write(b'1')
         os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
 
-
     ###################################################################################
 
     elif query == "kaç yaşındasın":
@@ -741,6 +740,10 @@ def respond():
 
     elif "yanıyorsun fuat abi" in query or "yanıyorsun jarvis" in query:
         playsound("./SoundEffects/fuatabi.mp3")
+
+    elif "eşşoğlueşşek" in query or "eşek oğlu eşek" in query:
+        Speak("eşşoğlueşşek sizsiniz efendim", True)
+        playsound("./SoundEffects/laugh.mp3")
 
     # elif "şifreyi kır" in query:
     #     Speak("Tamam efendim şifre kırma modulu çalıştırılıyor")
@@ -766,10 +769,6 @@ def respond():
     # elif "kendi arayüzünü kapat" in query:
     #     JarvisUI.stop()
     #     Speak("Tamam efendim")
-
-    elif "eşşoğlueşşek" in query:
-        Speak("eşşoğlueşşek sizsiniz efendim")
-        playsound("./SoundEffects/laugh.mp3")
 
     elif "robota bağlan" in query:
         Speak("Robota geçiliyor efendim. Hazır efendim")

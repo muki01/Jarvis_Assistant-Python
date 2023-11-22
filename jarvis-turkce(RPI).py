@@ -4,12 +4,12 @@ import asyncio
 import edge_tts
 import speech_recognition
 import webbrowser
-#import pyautogui
+import pyautogui
 import serial
 import time
 from datetime import datetime
 import random
-#import speedtest
+import speedtest
 import wikipedia
 #import pywhatkit
 import requests
@@ -47,7 +47,7 @@ async def _main(TEXT) -> None:
 def takecommand():
     command = speech_recognition.Recognizer()
     with speech_recognition.Microphone() as source:          #device_index=0
-        command.energy_threshold = 4000  
+        command.energy_threshold = 6000  
         command.dynamic_energy_threshold = True  
         print("Listening...")
         audio = command.listen(source,phrase_time_limit=15)
@@ -284,7 +284,8 @@ def respond():
                 timeReal = datetime.now().strftime("%H:%M")
                 time.sleep(1)
                 if timeReal == timeInput:
-                    playsound("./SoundEffects/alarm.mp3",False)
+                    mixer.music.load("./SoundEffects/alarm.mp3")
+                    mixer.music.play()
                     break
         t1 = threading.Thread(target=alarm)
         t1.start()
@@ -729,24 +730,33 @@ def respond():
         # arduino.write(b'1')
         os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
 
-
     ###################################################################################
 
     elif query == "kaç yaşındasın":
-        playsound("./SoundEffects/year.mp3")
+        mixer.music.load("./SoundEffects/year.mp3")
+        mixer.music.play()
 
     elif "roma'yı kim yaktı" in query:
-        playsound("./SoundEffects/roma.mp3")
+        mixer.music.load("./SoundEffects/roma.mp3")
+        mixer.music.play()
 
     elif "hahaha" in query or "he he" in query:
-        playsound("./SoundEffects/laugh.mp3")
+        mixer.music.load("./SoundEffects/laugh.mp3")
+        mixer.music.play()
 
     elif "osur" in query or "osuruk sesi" in query or "gaz çıkart" in query or "gaz çıkar" in query:
         farts = random.choice(["./SoundEffects/fart.mp3","./SoundEffects/fart2.mp3"])
-        playsound(farts)
+        mixer.music.load(farts)
+        mixer.music.play()
 
     elif "yanıyorsun fuat abi" in query or "yanıyorsun jarvis" in query:
-        playsound("./SoundEffects/fuatabi.mp3")
+        mixer.music.load("./SoundEffects/fuatabi.mp3")
+        mixer.music.play()
+
+    elif "eşşoğlueşşek" in query or "eşek oğlu eşek" in query:
+        Speak("eşşoğlueşşek sizsiniz efendim")
+        mixer.music.load("./SoundEffects/laugh.mp3")
+        mixer.music.play()
 
     # elif "şifreyi kır" in query:
     #     Speak("Tamam efendim şifre kırma modulu çalıştırılıyor")
@@ -772,10 +782,6 @@ def respond():
     # elif "kendi arayüzünü kapat" in query:
     #     JarvisUI.stop()
     #     Speak("Tamam efendim")
-
-    elif "eşşoğlueşşek" in query:
-        Speak("eşşoğlueşşek sizsiniz efendim")
-        playsound("./SoundEffects/laugh.mp3")
 
     elif "robota bağlan" in query:
         Speak("Robota geçiliyor efendim. Hazır efendim")
