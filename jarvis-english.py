@@ -1,7 +1,9 @@
 import os
 from playsound import playsound
+
 os.system("mode 40,5")
 playsound("./SoundEffects/start3.mp3", False)
+import pyttsx3
 import asyncio
 import edge_tts
 import speech_recognition
@@ -16,6 +18,7 @@ import wikipedia
 import pywhatkit
 import requests
 import threading
+
 # import openai
 import cv2
 from Codes.faceRec import faceRecognition
@@ -26,80 +29,101 @@ wled_IP_Addr = "http://192.168.0.90"
 robot_IP_Addr = "http://192.168.0.50"
 robotDog_IP_Addr = "http://192.168.0.200"
 camera_IP_Addr = "http://admin:123456@192.168.0.234"
-
-# openai.api_key = 'abcd'
+VoiceType = 1
 wikipedia.set_lang("en")
+# openai.api_key = 'abcd'
 
-VOICE = "en-US-SteffanNeural"
-OUTPUT_FILE = "voice.mp3"
-def Speak(audio, disableBackground=False):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(_main(audio))
+if VoiceType == 1:
+    VOICE = "en-US-SteffanNeural"
+    OUTPUT_FILE = "voice.mp3"
 
-    playsound("voice.mp3", disableBackground)
-    os.remove("voice.mp3")
+    def Speak(audio, disableBackground=False):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(_main(audio))
+        playsound("voice.mp3", disableBackground)
+        os.remove("voice.mp3")
 
-async def _main(TEXT) -> None:
-    communicate = edge_tts.Communicate(TEXT, VOICE)
-    await communicate.save(OUTPUT_FILE)
+    async def _main(TEXT) -> None:
+        communicate = edge_tts.Communicate(TEXT, VOICE)
+        await communicate.save(OUTPUT_FILE)
+
+elif VoiceType == 2:
+    Assistant = pyttsx3.init("sapi5")
+    voices = Assistant.getProperty("voices")
+    Assistant.setProperty("voice", voices[1].id)
+    Assistant.setProperty("rate", 170)
+
+    def Speak(audio):
+        Assistant.say(audio)
+        Assistant.runAndWait()
+
 
 def takecommand():
     command = speech_recognition.Recognizer()
     with speech_recognition.Microphone(device_index=0) as source:
-        command.energy_threshold = 3500  
-        command.dynamic_energy_threshold = True  
-        print('\033[36m' + "Listening...")
-        audio = command.listen(source,phrase_time_limit=15)
+        command.energy_threshold = 3500
+        command.dynamic_energy_threshold = True
+        print("\033[36m" + "Listening...")
+        audio = command.listen(source, phrase_time_limit=15)
 
         try:
-            print('\033[31m' + "Recognizing...")
+            print("\033[31m" + "Recognizing...")
             query = command.recognize_google(audio, language="en-US")
-            print ('\033[33m' + f"You Saind: "+ '\033[37m' + f"{query}")
+            print("\033[33m" + f"You Saind: " + "\033[37m" + f"{query}")
 
         except Exception as error:
             return ""
 
         return query.lower()
 
+
 # def openAI(speech):
-#     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": f"{speech}"}]) 
+#     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": f"{speech}"}])
 #     response_text = response.choices[0].message.content
 #     print('\033[32m' + f"OpenAI response: " + '\033[37m' + f"{response_text}")
 #     Speak(response_text,True)
 
+
 def checkArduino():
     try:
-        arduino = serial.Serial('COM5',9600)
+        arduino = serial.Serial("COM5", 9600)
         arduinoChecker = True
         print("Arduino Connected")
     except:
         arduinoChecker = False
         print("Arduino not Found")
 
+
 def greeting():
     hour = datetime.now().hour
-    if hour >=6 and hour < 12:
-        Speak("Good morning sir", True)
-    elif hour >= 12 and hour <18:
-        Speak("Good afternoon sir", True)
+    if hour >= 6 and hour < 12:
+        Speak("Good morning sir, what can i do for you")
+    elif hour >= 12 and hour < 18:
+        Speak("Good afternoon sir, what can i do for you")
     else:
-        Speak("Good evening sir", True)
-    Speak("What can i do for you")
+        Speak("Good evening sir, what can i do for you")
+
 
 def respond():
-
     #################OPENING COMMANDS
-    if query =="jarvis":
+    if query == "jarvis":
         Speak("Yes sir")
 
-    elif "hello" in query: #or "hi" in query:
+    elif "hello" in query:  # or "hi" in query:
         Speak("Hello sir")
 
-    elif query =="ok":
+    elif query == "ok":
         Speak("Is there anything you want me to do sir?")
 
-    elif "nope" in query or "no" in query or "nothing" in query or "shut up" in query or "wait" in query or "wait a second" in query:
+    elif (
+        "nope" in query
+        or "no" in query
+        or "nothing" in query
+        or "shut up" in query
+        or "wait" in query
+        or "wait a second" in query
+    ):
         Speak("Okay sir")
 
     elif "can you hear me" in query or "are you here" in query:
@@ -114,7 +138,13 @@ def respond():
     elif "what are you doing" in query:
         Speak("I am waiting for your command sir")
 
-    elif "nice job" in query or "bravo" in query or "good job" in query or "you are great" in query or "nice work" in query:
+    elif (
+        "nice job" in query
+        or "bravo" in query
+        or "good job" in query
+        or "you are great" in query
+        or "nice work" in query
+    ):
         Speak("Thank you sir")
 
     elif "thanks" in query or "thank you" in query:
@@ -133,7 +163,11 @@ def respond():
 
     #################INFORMATION ABOUT JARVIS
 
-    elif "what is your name" in query or "what's your name" in query or "who are you" in query:
+    elif (
+        "what is your name" in query
+        or "what's your name" in query
+        or "who are you" in query
+    ):
         Speak("My name is Jarvis sir")
 
     elif "what is your nickname" in query or "what's your nickname" in query:
@@ -155,7 +189,9 @@ def respond():
         Speak("My father and mother are both Muksin sir")
 
     elif "what can you do" in query:
-        Speak("I can chat with you, tell the time and date, search on Google, Wikipedia and YouTube, turn apps on and off, and control lights in the house")
+        Speak(
+            "I can chat with you, tell the time and date, search on Google, Wikipedia and YouTube, turn apps on and off, and control lights in the house"
+        )
 
     elif "how much is this" in query:
         fingers = cntFingers()
@@ -171,9 +207,9 @@ def respond():
     elif "what is my name" in query or "what's my name" in query:
         face_names = faceRecognition()
         cv2.destroyAllWindows()
-        face_names = ['Ayşe' if item=='Ayshe' else item for item in face_names]
+        face_names = ["Ayşe" if item == "Ayshe" else item for item in face_names]
         print(face_names)
-        if face_names !=[]:
+        if face_names != []:
             if len(face_names) < 2:
                 if "Unknown" in face_names:
                     Speak("I don't know you sir")
@@ -196,10 +232,10 @@ def respond():
     # elif "what is my grandfather's name" in query or "what's my grandfather's name" in query:
     #     Speak("Koca Babanızın ismi Bekir efendim")
 
-    #elif "dedemin ismi ne" in query or "dedemin adı ne" in query:
+    # elif "dedemin ismi ne" in query or "dedemin adı ne" in query:
     #    Speak("Dedenizin ismi Muhsin efendim")
 
-    #elif "nenemin ismi ne" in query or "nenemin adı ne" in query:
+    # elif "nenemin ismi ne" in query or "nenemin adı ne" in query:
     #    Speak("Nenenizin ismi Nefie efendim")
 
     elif "what is my brother's name" in query or "what's my brother's name" in query:
@@ -211,19 +247,21 @@ def respond():
     elif "what is my father's name" in query or "what's my father's name" in query:
         Speak("Hes name is Halil sir")
 
-    #elif "benim nasıl arabam var" in query:
+    # elif "benim nasıl arabam var" in query:
     #    Speak("Sizin canavar gibi bir Opelınız var efendim")
 
-    #elif "abimin nasıl arabası var" in query:
+    # elif "abimin nasıl arabası var" in query:
     #    Speak("Ağbinizin zvyar gibi bir BMW si var efendim")
 
-    #elif "babamın nasıl arabası var" in query:
+    # elif "babamın nasıl arabası var" in query:
     #    Speak("Babanızın zvyar gibi bir volkswagen touranı var efendim")
 
-    #elif "annemin nasıl arabası var" in query:
+    # elif "annemin nasıl arabası var" in query:
     #    Speak("Anneizin araba ile işi yok efendim")
 
-    elif "what is my age" in query or "how old am i" in query or "what's my age" in query:
+    elif (
+        "what is my age" in query or "how old am i" in query or "what's my age" in query
+    ):
         Speak("You are 18 years old sir")
 
     elif "where am i from" in query:
@@ -234,36 +272,54 @@ def respond():
 
     ####################CLOCK DATE
 
-    elif "what is the time" in query or "what's the time" in query or "what time is it" in query:
+    elif (
+        "what is the time" in query
+        or "what's the time" in query
+        or "what time is it" in query
+    ):
         time = datetime.now().strftime("%H:%M")
         print(time)
         Speak("Time is" + time + "sir")
 
-    elif "what day is it" in query or "tell today's date" in query or "what is the date" in query or "what's the date" in query:
+    elif (
+        "what day is it" in query
+        or "tell today's date" in query
+        or "what is the date" in query
+        or "what's the date" in query
+    ):
         date = datetime.now().strftime("%d:%B:%Y")
         print(date)
         Speak("Today is" + date + "sir")
 
     elif "what is the temperature" in query or "what's the temperature" in query:
         api = "baecdbf7f75171e614a981fc4acba560"
-        url = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=" + "Zimovina" + "&appid=" + api
+        url = (
+            "https://api.openweathermap.org/data/2.5/weather?units=metric&q="
+            + "Zimovina"
+            + "&appid="
+            + api
+        )
         data = requests.get(url).json()
         temp = data["main"]["temp"]
         humidity = data["main"]["humidity"]
         description = data["weather"][0]["description"]
         print(f"{int(temp)} derece, {humidity}% nem , gökyüzü {description}")
-        Speak(f"The temperature in Zimovina is {int(temp)} degrees, humidity is {humidity} percent and sky is {description} sir")
+        Speak(
+            f"The temperature in Zimovina is {int(temp)} degrees, humidity is {humidity} percent and sky is {description} sir"
+        )
 
     elif "set alarm" in query:
         Speak("Enter time sir")
         timeInput = input("Enter time: ")
+
         def alarm():
             while True:
                 timeReal = datetime.now().strftime("%H:%M")
                 time.sleep(1)
                 if timeReal == timeInput:
-                    playsound("./SoundEffects/alarm.mp3",False)
+                    playsound("./SoundEffects/alarm.mp3", False)
                     break
+
         t1 = threading.Thread(target=alarm)
         t1.start()
 
@@ -366,13 +422,19 @@ def respond():
         webbrowser.open("https://www.office.com")
         Speak("Opening Microsoft Office")
 
-    elif "open ets 2" in query or "open euro truck simulator 2" in query or "open ets2" in query:
+    elif (
+        "open ets 2" in query
+        or "open euro truck simulator 2" in query
+        or "open ets2" in query
+    ):
         os.startfile("E:/Games/Euro Truck Simulator 2/bin/win_x64/eurotrucks2.exe")
         Speak("Opening Euro Truck Simulator 2")
 
     elif "open rocket league" in query:
-        webbrowser.open("com.epicgames.launcher://apps/9773aa1aa54f4f7b80e44bef04986cea%3A530145df28a24424923f5828cc9031a1%3ASugar?action=launch&silent=true")
-        Speak("Opening Rocket League") 
+        webbrowser.open(
+            "com.epicgames.launcher://apps/9773aa1aa54f4f7b80e44bef04986cea%3A530145df28a24424923f5828cc9031a1%3ASugar?action=launch&silent=true"
+        )
+        Speak("Opening Rocket League")
 
     elif "open notepad" in query or "open the notepad" in query:
         os.startfile("C:/Windows/system32/notepad.exe")
@@ -383,7 +445,7 @@ def respond():
         nameFile = takecommand() + ".txt"
         Speak("what do you want to record sir")
         textFile = takecommand()
-        home_directory = os.path.expanduser( '~' )
+        home_directory = os.path.expanduser("~")
         File = open(f"{home_directory}\Desktop/{nameFile}", "w", encoding="utf-8")
         File.writelines(textFile)
         File.close
@@ -403,37 +465,43 @@ def respond():
 
     elif "open face recognition camera" in query:
         Speak("Ok sir")
+
         def faceRec():
-            while  True:
+            while True:
                 faceRecognition()
                 key = cv2.waitKey(1)
                 if key == 27 or query == "close the face recognition camera":
                     break
             cv2.destroyAllWindows()
+
         t1 = threading.Thread(target=faceRec)
         t1.start()
 
     elif "open item detection camera" in query:
         Speak("Ok sir")
+
         def itemDetect():
-            while  True:
+            while True:
                 itemDetection()
                 key = cv2.waitKey(1)
                 if key == 27 or query == "close the item detection camera":
                     break
             cv2.destroyAllWindows()
+
         t1 = threading.Thread(target=itemDetect)
         t1.start()
 
     elif "open hand detection camera" in query:
         Speak("Tamam efendim")
+
         def handDetect():
-            while  True:
+            while True:
                 cntFingers()
                 key = cv2.waitKey(1)
                 if key == 27 or query == "close the hand detection camera":
                     break
             cv2.destroyAllWindows()
+
         t1 = threading.Thread(target=handDetect)
         t1.start()
 
@@ -505,18 +573,23 @@ def respond():
 
     #####################################MASA LAMBASI
 
-    elif "desk light off" in query or "desk light on" in query or "turn on the desk light" in query or "turn off the desk light" in query:
+    elif (
+        "desk light off" in query
+        or "desk light on" in query
+        or "turn on the desk light" in query
+        or "turn off the desk light" in query
+    ):
         Speak("Ok sir")
         if "on" in query:
             getRequest = requests.get(f"{wled_IP_Addr}/win&T=1")
-            #arduino.write(b'2')
+            # arduino.write(b'2')
         elif "off" in query:
             getRequest = requests.get(f"{wled_IP_Addr}/win&T=0")
-            #arduino.write(b'1')
+            # arduino.write(b'1')
 
         if getRequest:
             print(f"Get Request status: {getRequest.status_code}")
-            getRequest=0;
+            getRequest = 0
 
     elif "desk light colour" in query:
         Speak("What color you want to change sir")
@@ -529,47 +602,47 @@ def respond():
                 elif colorr == "red":
                     Speak("Desk light is being made red sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=0&B=0")
-                    #arduino.write(b'3')
+                    # arduino.write(b'3')
                     break
                 elif colorr == "orange":
                     Speak("Desk light is being made orange sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=160&B=0")
-                    #arduino.write(b'6')
+                    # arduino.write(b'6')
                     break
                 elif colorr == "yellow":
                     Speak("Desk light is being made yellow sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=200&B=0")
-                    #arduino.write(b'7')
+                    # arduino.write(b'7')
                     break
                 elif colorr == "white":
                     Speak("Desk light is being made white sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=255&B=255")
-                    #arduino.write(b'8')
+                    # arduino.write(b'8')
                     break
                 elif colorr == "pink":
                     Speak("Desk light is being made pink sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=255&G=0&B=220")
-                    #arduino.write(b'9')
+                    # arduino.write(b'9')
                     break
                 elif colorr == "blue":
                     Speak("Desk light is being made blue sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=0&G=200&B=255")
-                    #arduino.write(b'5')
+                    # arduino.write(b'5')
                     break
                 elif colorr == "cyan":
                     Speak("Desk light is being made cyan sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=0&G=255&B=220")
-                    #arduino.write(b'10')
+                    # arduino.write(b'10')
                     break
                 elif colorr == "green":
                     Speak("Desk light is being made green sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=0&G=255&B=0")
-                    #arduino.write(b'4')
+                    # arduino.write(b'4')
                     break
                 elif colorr == "purple":
                     Speak("Desk light is being made purple sir")
                     getRequest = requests.get(f"{wled_IP_Addr}/win&R=2770&G=0&B=255")
-                    #arduino.write(b'4')
+                    # arduino.write(b'4')
                     break
                 else:
                     Speak("Tell me another color sir")
@@ -577,8 +650,8 @@ def respond():
                 Speak("I don't understand sir")
         if getRequest:
             print(f"Get Request status: {getRequest.status_code}")
-            getRequest=0;
-    
+            getRequest = 0
+
     elif "desk light effect" in query:
         Speak("Which effect you want to select sir")
         while True:
@@ -606,42 +679,42 @@ def respond():
 
         if getRequest:
             print(f"Get Request status: {getRequest.status_code}")
-            getRequest=0;
+            getRequest = 0
 
     #################################################################
 
     elif "change the window" in query:
         pyautogui.keyDown("alt")
         pyautogui.press("tab")
-        #time.sleep(1)
+        # time.sleep(1)
         pyautogui.keyUp("alt")
         Speak("Ok sir")
 
     elif "close the window" in query:
         pyautogui.keyDown("alt")
         pyautogui.press("f4")
-        #time.sleep(1)
+        # time.sleep(1)
         pyautogui.keyUp("alt")
         Speak("Ok sir")
 
     elif "minimise the window" in query:
         pyautogui.keyDown("win")
         pyautogui.press("down")
-        #time.sleep(1)
+        # time.sleep(1)
         pyautogui.keyUp("win")
         Speak("Ok sir")
 
     elif "minimise the windows" in query:
         pyautogui.keyDown("win")
         pyautogui.press("m")
-        #time.sleep(1)
+        # time.sleep(1)
         pyautogui.keyUp("win")
         Speak("Ok sir")
 
     elif "maximise window" in query:
         pyautogui.keyDown("win")
         pyautogui.press("up")
-        #time.sleep(1)
+        # time.sleep(1)
         pyautogui.keyUp("win")
         Speak("Ok sir")
 
@@ -654,7 +727,9 @@ def respond():
     #################################################################
 
     elif "open my playlist" in query:
-        webbrowser.open("https://www.youtube.com/watch?v=H9aq3Wj1zsg&list=RDH9aq3Wj1zsg&start_radio=1")
+        webbrowser.open(
+            "https://www.youtube.com/watch?v=H9aq3Wj1zsg&list=RDH9aq3Wj1zsg&start_radio=1"
+        )
         Speak("Opening your playlist sir")
 
     elif "make speed test" in query:
@@ -662,14 +737,15 @@ def respond():
         speed = speedtest.Speedtest()
         download = speed.download()
         upload = speed.upload()
-        correctDown = int(download/800000)
-        correctUp = int(upload/800000)
-        Speak(f"Downloading speed is {correctDown-10} megabit per seccong and uploading speed is {correctUp-10} megabit per seccong")
-
+        correctDown = int(download / 800000)
+        correctUp = int(upload / 800000)
+        Speak(
+            f"Downloading speed is {correctDown-10} megabit per seccong and uploading speed is {correctUp-10} megabit per seccong"
+        )
 
     elif "take screenshot" in query or "take ss" in query:
-        img= pyautogui.screenshot()
-        home_directory = os.path.expanduser( '~' )
+        img = pyautogui.screenshot()
+        home_directory = os.path.expanduser("~")
         img.save(f"{home_directory}/Desktop/screenshot.png")
         Speak("Screenshot taken sir")
 
@@ -703,7 +779,7 @@ def respond():
         playsound("./SoundEffects/laugh.mp3")
 
     elif "fart" in query or "fart sound" in query:
-        farts = random.choice(["./SoundEffects/fart.mp3","./SoundEffects/fart2.mp3"])
+        farts = random.choice(["./SoundEffects/fart.mp3", "./SoundEffects/fart2.mp3"])
         playsound(farts)
 
     # elif "crack the password" in query:
@@ -757,7 +833,7 @@ def respond():
                     break
                 if getRequest:
                     print(f"Get Request status: {getRequest.status_code}")
-                    getRequest=0;
+                    getRequest = 0
             except:
                 Speak("There was an error sir")
 
@@ -767,20 +843,36 @@ def respond():
             try:
                 command = takecommand()
                 if "turn right" in command or "right" in command:
-                    mgetRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng")
+                    mgetRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng"
+                    )
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng"
+                    )
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_right&lang=eng"
+                    )
                     Speak("Ready sir")
                 elif "turn left" in command or "left" in command:
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng")
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng"
+                    )
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng"
+                    )
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_left&lang=eng"
+                    )
                     Speak("Ready sir")
                 elif "up" in command:
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_up&lang=eng")
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_up&lang=eng"
+                    )
                     Speak("Ready sir")
                 elif "down" in command:
-                    getRequest = requests.get(f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_down&lang=eng")
+                    getRequest = requests.get(
+                        f"{camera_IP_Addr}/cgi-bin/action?action=cam_mv&diretion=cam_down&lang=eng"
+                    )
                     Speak("Ready sir")
                 elif "exit" in command:
                     Speak("Ok sir exiting the camera")
@@ -788,7 +880,7 @@ def respond():
 
                 if getRequest:
                     print(f"Get Request status: {getRequest.status_code}")
-                    getRequest=0;
+                    getRequest = 0
 
             except:
                 Speak("There was an error sir")
@@ -867,18 +959,19 @@ def respond():
 
                 if getRequest:
                     print(f"Get Request status: {getRequest.status_code}")
-                    getRequest=0;
+                    getRequest = 0
 
             except:
                 Speak("There was an error sir")
 
+
 checkArduino()
-#os.startfile("E:\Wallpaper Engine\wallpaper64.exe")
+# os.startfile("E:\Wallpaper Engine\wallpaper64.exe")
 os.startfile(".\Required\Rainmeter\Rainmeter.exe")
 greeting()
 while True:
     query = takecommand()
-    if query !="":
+    if query != "":
         respond()
     # if query == "switch to ai":
     #     Speak("Switch to AI", True)
@@ -890,9 +983,13 @@ while True:
     #                 break
     #             else:
     #                 openAI(query)
-                
-    if query == "you can sleep"  or query == "sleep" or query == "goodbye" or query == "goodbay":
+
+    if (
+        query == "you can sleep"
+        or query == "sleep"
+        or query == "goodbye"
+        or query == "goodbay"
+    ):
         Speak("Ok sir, you can call me if you need me", True)
         os.system("taskkill /f /im Rainmeter.exe")
         exit()
-    
