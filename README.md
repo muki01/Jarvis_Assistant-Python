@@ -1,5 +1,5 @@
 # Jarvis-Python
-This is my Jarvis project with Python. He can talk 3 Languages: English, Bulgarish, Turkish.
+This is my Jarvis project with Python. He can talk 3 Languages: English, Bulgarian, Turkish.
 <br/>
 
 ## ⬇️Download the latest revision
